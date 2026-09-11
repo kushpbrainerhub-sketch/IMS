@@ -45,3 +45,10 @@ class ResetPasswordRequest(BaseModel):
 
 class VerifyEmailRequest(BaseModel):
     token: str
+
+
+class RegisterResponse(BaseModel):
+    user: UserOut
+    # Only set when SMTP isn't configured, so the frontend can show the link
+    # directly instead of a real email being sent.
+    verification_link: str | None = None

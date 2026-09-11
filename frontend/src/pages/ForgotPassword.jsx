@@ -41,9 +41,22 @@ export default function ForgotPassword() {
         </Typography>
 
         {submit.isSuccess ? (
-          <Alert severity="success">
-            If that email is registered, a reset link has been sent. Check your inbox.
-          </Alert>
+          <>
+            <Alert severity="success" sx={{ mb: submit.data?.data?.reset_link ? 2 : 0 }}>
+              If that email is registered, a reset link has been sent. Check your inbox.
+            </Alert>
+            {submit.data?.data?.reset_link && (
+              <>
+                <Alert severity="info" sx={{ mb: 2 }}>
+                  Email sending isn't configured yet, so here's your reset link directly instead
+                  of an email.
+                </Alert>
+                <Button href={submit.data.data.reset_link} variant="outlined" fullWidth>
+                  Reset password now
+                </Button>
+              </>
+            )}
+          </>
         ) : (
           <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <TextField

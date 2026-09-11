@@ -19,6 +19,7 @@ from app.models.user import User, UserRole
 from app.schemas.user import (
     ForgotPasswordRequest,
     LoginRequest,
+    RegisterResponse,
     ResetPasswordRequest,
     SetupStatus,
     Token,
@@ -30,7 +31,9 @@ from app.schemas.user import (
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
-def _send_verification_email(user: User) -> None:
+def _send_verification_email(user: User) -> str | None:
+    """Sends the verification email and returns the link only when SMTP
+    isn't configured, so the frontend can show it directly instead."""
     token = create_email_verification_token(user.id)
     link = f"{settings.FRONTEND_URL}/verify-email?token={token}"
     send_email(
@@ -39,6 +42,7 @@ def _send_verification_email(user: User) -> None:
         f"Hi {user.name},\n\nVerify your email address by opening this link:\n{link}\n\n"
         "This link expires in 24 hours.",
     )
+    return None if settings.SMTP_HOST else link
 
 
 @router.get("/setup-status", response_model=SetupStatus)
@@ -46,7 +50,7 @@ def setup_status(db: Session = Depends(get_db)):
     return SetupStatus(needs_setup=db.query(User).count() == 0)
 
 
-@router.post("/register", response_model=UserOut, status_code=status.HTTP_201_CREATED)
+@router.post("/register", response_model=RegisterResponse, status_code=status.HTTP_201_CREATED)
 def register(
     payload: UserCreate,
     db: Session = Depends(get_db),
@@ -69,8 +73,8 @@ def register(
     db.add(user)
     db.commit()
     db.refresh(user)
-    _send_verification_email(user)
-    return user
+    verification_link = _send_verification_email(user)
+    return RegisterResponse(user=user, verification_link=verification_link)
 
 
 @router.post("/login", response_model=Token)
@@ -94,6 +98,7 @@ def me(current_user: User = Depends(get_current_user)):
 def forgot_password(payload: ForgotPasswordRequest, request: Request, db: Session = Depends(get_db)):
     check_rate_limit(request, "forgot-password")
     user = db.query(User).filter(User.email == payload.email).first()
+    reset_link = None
     if user:
         token = create_password_reset_token(user.id)
         link = f"{settings.FRONTEND_URL}/reset-password?token={token}"
@@ -103,7 +108,9 @@ def forgot_password(payload: ForgotPasswordRequest, request: Request, db: Sessio
             f"Hi {user.name},\n\nReset your password by opening this link:\n{link}\n\n"
             "This link expires in 30 minutes. If you didn't request this, ignore this email.",
         )
-    return {"detail": "If that email is registered, a reset link has been sent."}
+        if not settings.SMTP_HOST:
+            reset_link = link
+    return {"detail": "If that email is registered, a reset link has been sent.", "reset_link": reset_link}
 
 
 @router.post("/reset-password")
@@ -135,6 +142,10 @@ def verify_email(payload: VerifyEmailRequest, db: Session = Depends(get_db)):
 @router.post("/resend-verification")
 def resend_verification(request: Request, current_user: User = Depends(get_current_user)):
     check_rate_limit(request, "resend-verification")
+    verification_link = None
     if not current_user.email_verified:
-        _send_verification_email(current_user)
-    return {"detail": "If your email isn't verified yet, a new link has been sent."}
+        verification_link = _send_verification_email(current_user)
+    return {
+        "detail": "If your email isn't verified yet, a new link has been sent.",
+        "verification_link": verification_link,
+    }

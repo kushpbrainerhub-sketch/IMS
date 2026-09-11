@@ -16,15 +16,12 @@ export default function Signup() {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
+  const [result, setResult] = useState(null)
   const navigate = useNavigate()
 
   const signup = useMutation({
     mutationFn: () => apiClient.post('/auth/register', { name, email, password }),
-    onSuccess: () => {
-      navigate('/login', {
-        state: { message: 'Account created! Check your email to verify your address, then log in.' },
-      })
-    },
+    onSuccess: (res) => setResult(res.data),
     onError: (err) => setError(err.response?.data?.detail || 'Could not create account'),
   })
 
@@ -36,6 +33,55 @@ export default function Signup() {
       return
     }
     signup.mutate()
+  }
+
+  if (result) {
+    return (
+      <Box
+        sx={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          bgcolor: 'background.default',
+        }}
+      >
+        <Paper elevation={2} sx={{ p: 4, width: 380 }}>
+          <Typography variant="h5" fontWeight={700} color="primary" gutterBottom>
+            Account created
+          </Typography>
+
+          {result.verification_link ? (
+            <>
+              <Alert severity="info" sx={{ mb: 2 }}>
+                Email sending isn't configured yet, so here's your verification link directly
+                instead of an email.
+              </Alert>
+              <Button
+                href={result.verification_link}
+                variant="outlined"
+                fullWidth
+                sx={{ mb: 2 }}
+              >
+                Verify email now
+              </Button>
+            </>
+          ) : (
+            <Alert severity="success" sx={{ mb: 2 }}>
+              Check your email to verify your address.
+            </Alert>
+          )}
+
+          <Button
+            variant="contained"
+            fullWidth
+            onClick={() => navigate('/login', { state: { message: 'Account created! You can log in now.' } })}
+          >
+            Continue to log in
+          </Button>
+        </Paper>
+      </Box>
+    )
   }
 
   return (
