@@ -122,13 +122,8 @@ export default function Landing() {
             </Typography>
             <Box sx={{ flexGrow: 1 }} />
             <Stack direction="row" spacing={1.5}>
-              {!needsSetup && (
-                <Button component={RouterLink} to="/login" color="inherit">
-                  Log in
-                </Button>
-              )}
               <Button component={RouterLink} to={primaryCta.to} variant="contained">
-                {needsSetup ? 'Get started' : 'Sign up'}
+                {primaryCta.label}
               </Button>
             </Stack>
           </Container>
