@@ -14,11 +14,13 @@ import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
+import CategoryIcon from '@mui/icons-material/CategoryOutlined'
 import DashboardIcon from '@mui/icons-material/DashboardOutlined'
 import Inventory2Icon from '@mui/icons-material/Inventory2Outlined'
 import LocalShippingIcon from '@mui/icons-material/LocalShippingOutlined'
 import LogoutIcon from '@mui/icons-material/LogoutOutlined'
 import PointOfSaleIcon from '@mui/icons-material/PointOfSaleOutlined'
+import ReceiptLongIcon from '@mui/icons-material/ReceiptLongOutlined'
 import StoreIcon from '@mui/icons-material/StoreOutlined'
 import { useAuth } from '../context/AuthContext'
 
@@ -27,7 +29,9 @@ const DRAWER_WIDTH = 240
 const NAV_ITEMS = [
   { label: 'Dashboard', path: '/', icon: <DashboardIcon /> },
   { label: 'Billing', path: '/billing', icon: <PointOfSaleIcon /> },
+  { label: 'Sales', path: '/sales', icon: <ReceiptLongIcon /> },
   { label: 'Products', path: '/products', icon: <Inventory2Icon /> },
+  { label: 'Categories', path: '/categories', icon: <CategoryIcon /> },
   { label: 'Purchases', path: '/purchases', icon: <LocalShippingIcon /> },
   { label: 'Suppliers', path: '/suppliers', icon: <StoreIcon /> },
 ]
