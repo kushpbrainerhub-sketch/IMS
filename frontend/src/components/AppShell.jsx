@@ -22,6 +22,7 @@ import LogoutIcon from '@mui/icons-material/LogoutOutlined'
 import PointOfSaleIcon from '@mui/icons-material/PointOfSaleOutlined'
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLongOutlined'
 import StoreIcon from '@mui/icons-material/StoreOutlined'
+import SwapVertIcon from '@mui/icons-material/SwapVertOutlined'
 import { useAuth } from '../context/AuthContext'
 
 const DRAWER_WIDTH = 240
@@ -33,6 +34,7 @@ const NAV_ITEMS = [
   { label: 'Products', path: '/products', icon: <Inventory2Icon /> },
   { label: 'Categories', path: '/categories', icon: <CategoryIcon /> },
   { label: 'Purchases', path: '/purchases', icon: <LocalShippingIcon /> },
+  { label: 'Stock ledger', path: '/stock-ledger', icon: <SwapVertIcon /> },
   { label: 'Suppliers', path: '/suppliers', icon: <StoreIcon /> },
 ]
 

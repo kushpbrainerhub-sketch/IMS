@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
@@ -79,4 +80,8 @@ def delete_product(
     if product is None:
         raise HTTPException(status_code=404, detail="Product not found")
     db.delete(product)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Product is still in use and cannot be deleted")

@@ -1,11 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.core.deps import get_current_user, require_role
 from app.models.category import Category
 from app.models.user import UserRole
-from app.schemas.category import CategoryCreate, CategoryOut
+from app.schemas.category import CategoryCreate, CategoryOut, CategoryUpdate
 
 router = APIRouter(prefix="/categories", tags=["categories"])
 
@@ -30,6 +31,24 @@ def create_category(
     return category
 
 
+@router.patch("/{category_id}", response_model=CategoryOut)
+def update_category(
+    category_id: int,
+    payload: CategoryUpdate,
+    db: Session = Depends(get_db),
+    _=Depends(require_role(UserRole.admin, UserRole.manager)),
+):
+    category = db.get(Category, category_id)
+    if category is None:
+        raise HTTPException(status_code=404, detail="Category not found")
+    if db.query(Category).filter(Category.name == payload.name, Category.id != category_id).first():
+        raise HTTPException(status_code=400, detail="Category already exists")
+    category.name = payload.name
+    db.commit()
+    db.refresh(category)
+    return category
+
+
 @router.delete("/{category_id}", status_code=204)
 def delete_category(
     category_id: int,
@@ -40,4 +59,8 @@ def delete_category(
     if category is None:
         raise HTTPException(status_code=404, detail="Category not found")
     db.delete(category)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Category is still in use and cannot be deleted")

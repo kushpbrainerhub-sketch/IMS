@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
@@ -14,12 +15,16 @@ import TableRow from '@mui/material/TableRow'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutlineOutlined'
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
+import EditSupplierDialog from '../components/EditSupplierDialog'
 import { apiClient } from '../api/client'
 
 const emptyForm = { name: '', phone: '', email: '', address: '' }
 
 export default function Suppliers() {
   const [form, setForm] = useState(emptyForm)
+  const [editingSupplier, setEditingSupplier] = useState(null)
+  const [error, setError] = useState('')
   const queryClient = useQueryClient()
 
   const { data: suppliers = [], isLoading } = useQuery({
@@ -37,7 +42,11 @@ export default function Suppliers() {
 
   const deleteSupplier = useMutation({
     mutationFn: (id) => apiClient.delete(`/suppliers/${id}`),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['suppliers'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['suppliers'] })
+      setError('')
+    },
+    onError: (err) => setError(err.response?.data?.detail || 'Could not delete supplier'),
   })
 
   function handleSubmit(e) {
@@ -101,6 +110,12 @@ export default function Suppliers() {
         </Box>
       </Paper>
 
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
+
       <Paper variant="outlined">
         <TableContainer>
           <Table size="small">
@@ -134,6 +149,9 @@ export default function Suppliers() {
                     <TableCell>{s.email || '—'}</TableCell>
                     <TableCell>{s.address || '—'}</TableCell>
                     <TableCell align="right">
+                      <IconButton size="small" onClick={() => setEditingSupplier(s)}>
+                        <EditOutlinedIcon fontSize="small" />
+                      </IconButton>
                       <IconButton size="small" onClick={() => deleteSupplier.mutate(s.id)}>
                         <DeleteOutlineIcon fontSize="small" />
                       </IconButton>
@@ -145,6 +163,10 @@ export default function Suppliers() {
           </Table>
         </TableContainer>
       </Paper>
+
+      {editingSupplier && (
+        <EditSupplierDialog supplier={editingSupplier} onClose={() => setEditingSupplier(null)} />
+      )}
     </Box>
   )
 }

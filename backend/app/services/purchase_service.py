@@ -11,7 +11,10 @@ from app.schemas.purchase import PurchaseCreate
 
 def create_purchase(db: Session, payload: PurchaseCreate, user_id: int) -> Purchase:
     product_ids = [item.product_id for item in payload.items]
-    products = {p.id: p for p in db.query(Product).filter(Product.id.in_(product_ids)).all()}
+    products = {
+        p.id: p
+        for p in db.query(Product).filter(Product.id.in_(product_ids)).with_for_update().all()
+    }
     missing = set(product_ids) - products.keys()
     if missing:
         raise HTTPException(status_code=404, detail=f"Unknown product ids: {sorted(missing)}")

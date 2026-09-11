@@ -17,7 +17,9 @@ import TableRow from '@mui/material/TableRow'
 import TextField from '@mui/material/TextField'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import TuneIcon from '@mui/icons-material/Tune'
+import EditProductDialog from '../components/EditProductDialog'
 import StockAdjustDialog from '../components/StockAdjustDialog'
 import { apiClient } from '../api/client'
 
@@ -52,6 +54,7 @@ export default function Products() {
   const [form, setForm] = useState(emptyProductForm)
   const [newCategory, setNewCategory] = useState('')
   const [adjustingProduct, setAdjustingProduct] = useState(null)
+  const [editingProduct, setEditingProduct] = useState(null)
 
   const queryClient = useQueryClient()
   const { data: categories = [] } = useCategories()
@@ -288,6 +291,11 @@ export default function Products() {
                       </TableCell>
                       <TableCell align="right">{p.reorder_level}</TableCell>
                       <TableCell align="right">
+                        <Tooltip title="Edit product">
+                          <IconButton size="small" onClick={() => setEditingProduct(p)}>
+                            <EditOutlinedIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
                         <Tooltip title="Adjust stock">
                           <IconButton size="small" onClick={() => setAdjustingProduct(p)}>
                             <TuneIcon fontSize="small" />
@@ -305,6 +313,13 @@ export default function Products() {
 
       {adjustingProduct && (
         <StockAdjustDialog product={adjustingProduct} onClose={() => setAdjustingProduct(null)} />
+      )}
+      {editingProduct && (
+        <EditProductDialog
+          product={editingProduct}
+          categories={categories}
+          onClose={() => setEditingProduct(null)}
+        />
       )}
     </Box>
   )

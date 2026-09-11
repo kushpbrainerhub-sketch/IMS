@@ -8,6 +8,7 @@ import Login from './pages/Login'
 import Products from './pages/Products'
 import Purchases from './pages/Purchases'
 import Sales from './pages/Sales'
+import StockLedger from './pages/StockLedger'
 import Suppliers from './pages/Suppliers'
 
 function withShell(element) {
@@ -28,6 +29,7 @@ function App() {
       <Route path="/products" element={withShell(<Products />)} />
       <Route path="/categories" element={withShell(<Categories />)} />
       <Route path="/purchases" element={withShell(<Purchases />)} />
+      <Route path="/stock-ledger" element={withShell(<StockLedger />)} />
       <Route path="/suppliers" element={withShell(<Suppliers />)} />
     </Routes>
   )

@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.core.deps import get_current_user, get_current_user_optional, require_role
+from app.core.rate_limit import check_login_rate_limit, record_failed_login, reset_login_attempts
 from app.core.security import create_access_token, hash_password, verify_password
 from app.models.user import User, UserRole
 from app.schemas.user import LoginRequest, Token, UserCreate, UserOut
@@ -37,10 +38,13 @@ def register(
 
 
 @router.post("/login", response_model=Token)
-def login(payload: LoginRequest, db: Session = Depends(get_db)):
+def login(payload: LoginRequest, request: Request, db: Session = Depends(get_db)):
+    check_login_rate_limit(request)
     user = db.query(User).filter(User.email == payload.email).first()
     if not user or not verify_password(payload.password, user.password_hash):
+        record_failed_login(request)
         raise HTTPException(status_code=401, detail="Incorrect email or password")
+    reset_login_attempts(request)
     token = create_access_token({"sub": str(user.id), "role": user.role.value})
     return Token(access_token=token)
 

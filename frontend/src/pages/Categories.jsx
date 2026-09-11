@@ -14,12 +14,17 @@ import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
+import CheckIcon from '@mui/icons-material/Check'
+import CloseIcon from '@mui/icons-material/Close'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutlineOutlined'
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import { apiClient } from '../api/client'
 
 export default function Categories() {
   const [name, setName] = useState('')
   const [error, setError] = useState('')
+  const [editingId, setEditingId] = useState(null)
+  const [editingName, setEditingName] = useState('')
   const queryClient = useQueryClient()
 
   const { data: categories = [], isLoading } = useQuery({
@@ -43,10 +48,30 @@ export default function Categories() {
     onError: (err) => setError(err.response?.data?.detail || 'Could not delete category'),
   })
 
+  const updateCategory = useMutation({
+    mutationFn: ({ id, name: newName }) => apiClient.patch(`/categories/${id}`, { name: newName }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['categories'] })
+      setEditingId(null)
+    },
+    onError: (err) => setError(err.response?.data?.detail || 'Could not rename category'),
+  })
+
   function handleSubmit(e) {
     e.preventDefault()
     setError('')
     createCategory.mutate({ name })
+  }
+
+  function startEditing(category) {
+    setError('')
+    setEditingId(category.id)
+    setEditingName(category.name)
+  }
+
+  function saveEditing(id) {
+    setError('')
+    updateCategory.mutate({ id, name: editingName })
   }
 
   return (
@@ -106,16 +131,41 @@ export default function Categories() {
                   </TableCell>
                 </TableRow>
               ) : (
-                categories.map((c) => (
-                  <TableRow key={c.id} hover>
-                    <TableCell>{c.name}</TableCell>
-                    <TableCell align="right">
-                      <IconButton size="small" onClick={() => deleteCategory.mutate(c.id)}>
-                        <DeleteOutlineIcon fontSize="small" />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))
+                categories.map((c) =>
+                  editingId === c.id ? (
+                    <TableRow key={c.id} hover>
+                      <TableCell>
+                        <TextField
+                          value={editingName}
+                          onChange={(e) => setEditingName(e.target.value)}
+                          size="small"
+                          autoFocus
+                          fullWidth
+                        />
+                      </TableCell>
+                      <TableCell align="right">
+                        <IconButton size="small" onClick={() => saveEditing(c.id)} disabled={updateCategory.isPending}>
+                          <CheckIcon fontSize="small" />
+                        </IconButton>
+                        <IconButton size="small" onClick={() => setEditingId(null)}>
+                          <CloseIcon fontSize="small" />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    <TableRow key={c.id} hover>
+                      <TableCell>{c.name}</TableCell>
+                      <TableCell align="right">
+                        <IconButton size="small" onClick={() => startEditing(c)}>
+                          <EditOutlinedIcon fontSize="small" />
+                        </IconButton>
+                        <IconButton size="small" onClick={() => deleteCategory.mutate(c.id)}>
+                          <DeleteOutlineIcon fontSize="small" />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ),
+                )
               )}
             </TableBody>
           </Table>
