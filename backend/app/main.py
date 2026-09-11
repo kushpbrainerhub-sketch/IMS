@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import health
+from app.api import auth, categories, health, products, purchases, reports, sales, stock, suppliers
 
 app = FastAPI(title="IMS API", version="0.1.0")
 
@@ -14,3 +14,11 @@ app.add_middleware(
 )
 
 app.include_router(health.router, prefix="/api/v1")
+app.include_router(auth.router, prefix="/api/v1")
+app.include_router(categories.router, prefix="/api/v1")
+app.include_router(products.router, prefix="/api/v1")
+app.include_router(suppliers.router, prefix="/api/v1")
+app.include_router(purchases.router, prefix="/api/v1")
+app.include_router(sales.router, prefix="/api/v1")
+app.include_router(stock.router, prefix="/api/v1")
+app.include_router(reports.router, prefix="/api/v1")
