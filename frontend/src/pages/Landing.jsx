@@ -10,6 +10,7 @@ import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutlineOutlined'
 import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined'
 import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
@@ -19,42 +20,49 @@ import { useAuth } from '../context/AuthContext'
 
 const FEATURES = [
   {
-    icon: <Inventory2OutlinedIcon fontSize="large" />,
+    icon: <Inventory2OutlinedIcon fontSize="medium" />,
     title: 'Inventory that tracks itself',
-    body: 'Products, categories, suppliers, purchases and a full stock ledger — every unit in and out is logged automatically.',
+    body: 'Products, categories, suppliers, purchases and a full stock ledger — every unit in and out is logged automatically, no spreadsheet required.',
   },
   {
-    icon: <PointOfSaleOutlinedIcon fontSize="large" />,
-    title: 'Billing at the counter',
-    body: 'Ring up a sale, print the invoice, done. Stock updates the moment you check out — no separate reconciliation step.',
+    icon: <PointOfSaleOutlinedIcon fontSize="medium" />,
+    title: 'Bill customers at the counter',
+    body: 'Ring up a sale, print the invoice, done. Stock updates the moment you check out — no end-of-day reconciliation.',
   },
   {
-    icon: <DashboardOutlinedIcon fontSize="large" />,
-    title: 'Know your numbers',
-    body: "Today's sales, this month's revenue, low-stock alerts and your best sellers, on one dashboard.",
+    icon: <DashboardOutlinedIcon fontSize="medium" />,
+    title: 'See where the shop stands',
+    body: "Today's sales, this month's revenue, low-stock alerts and your best sellers — one screen, always current.",
   },
   {
-    icon: <LockOutlinedIcon fontSize="large" />,
-    title: 'Yours alone',
-    body: "One owner account, one shop's data. Nothing shared, nothing to configure — sign up once and it's set up.",
+    icon: <LockOutlinedIcon fontSize="medium" />,
+    title: 'Built for one owner',
+    body: "Your own account, your own data — nothing shared with anyone else, nothing to configure before it's ready.",
   },
 ]
 
+const VALUE_STRIP = [
+  'No subscription tiers or upsells',
+  'Your data stays on your own server',
+  'Ready to use in a few minutes',
+]
+
 const STEPS = [
-  { n: '1', title: 'Create your account', body: 'One-time signup — you become the owner of this shop.' },
-  { n: '2', title: 'Add your products', body: 'Set up categories, suppliers and starting stock.' },
-  { n: '3', title: 'Start selling', body: 'Bill customers, track stock, watch the dashboard fill in.' },
+  { n: '1', title: 'Create your account', body: 'A one-time setup — you become the owner of this shop’s system.' },
+  { n: '2', title: 'Add your products', body: 'Set up categories, suppliers, and starting stock counts.' },
+  { n: '3', title: 'Start billing', body: 'Ring up sales, print invoices, and watch the dashboard fill in.' },
 ]
 
 function DashboardPreview() {
   return (
     <Paper
-      elevation={6}
+      elevation={8}
       sx={{
         borderRadius: 3,
         overflow: 'hidden',
-        maxWidth: 420,
+        maxWidth: 440,
         mx: 'auto',
+        border: '1px solid #e3e7ec',
       }}
     >
       <Box sx={{ px: 2, py: 1, bgcolor: '#eef1f4', display: 'flex', gap: 0.75 }}>
@@ -66,7 +74,7 @@ function DashboardPreview() {
         <Grid container spacing={1.5} sx={{ mb: 2 }}>
           {[
             { label: "Today's sales", value: '₹2,404' },
-            { label: 'Low stock', value: '2' },
+            { label: 'Low stock', value: '2 items' },
           ].map((kpi) => (
             <Grid key={kpi.label} size={6}>
               <Paper variant="outlined" sx={{ p: 1.25 }}>
@@ -80,6 +88,9 @@ function DashboardPreview() {
             </Grid>
           ))}
         </Grid>
+        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.75 }}>
+          Sales, last 7 days
+        </Typography>
         <Box sx={{ display: 'flex', alignItems: 'flex-end', gap: 0.75, height: 72 }}>
           {[40, 65, 30, 80, 55, 90, 70].map((h, i) => (
             <Box
@@ -107,10 +118,16 @@ export default function Landing() {
     if (!loading && user) navigate('/dashboard', { replace: true })
   }, [loading, user, navigate])
 
+  useEffect(() => {
+    document.documentElement.style.scrollBehavior = 'smooth'
+    return () => {
+      document.documentElement.style.scrollBehavior = ''
+    }
+  }, [])
+
   if (loading || user) return null
 
   const needsSetup = setupStatus?.needs_setup
-  const primaryCta = { to: needsSetup ? '/signup' : '/login', label: needsSetup ? 'Get started' : 'Log in' }
 
   return (
     <Box sx={{ bgcolor: 'background.default' }}>
@@ -121,6 +138,14 @@ export default function Landing() {
               IMS
             </Typography>
             <Box sx={{ flexGrow: 1 }} />
+            <Stack direction="row" spacing={0.5} sx={{ display: { xs: 'none', sm: 'flex' }, mr: 2 }}>
+              <Button color="inherit" href="#features">
+                Features
+              </Button>
+              <Button color="inherit" href="#how-it-works">
+                How it works
+              </Button>
+            </Stack>
             <Stack direction="row" spacing={1.5}>
               <Button component={RouterLink} to="/login" color="inherit">
                 Log in
@@ -133,26 +158,49 @@ export default function Landing() {
         </Toolbar>
       </AppBar>
 
-      <Box component="section" sx={{ py: { xs: 6, md: 10 } }}>
+      <Box
+        component="section"
+        sx={{
+          py: { xs: 7, md: 12 },
+          background: 'linear-gradient(180deg, rgba(47,93,138,0.06) 0%, rgba(47,93,138,0) 60%)',
+        }}
+      >
         <Container maxWidth="lg">
           <Grid container spacing={6} alignItems="center">
             <Grid size={{ xs: 12, md: 6 }}>
-              <Typography variant="h2" fontWeight={800} sx={{ fontSize: { xs: '2.25rem', md: '3rem' }, mb: 2 }}>
-                Inventory &amp; billing, run from one place
+              <Typography
+                variant="h2"
+                fontWeight={800}
+                sx={{ fontSize: { xs: '2.1rem', md: '3rem' }, lineHeight: 1.15, mb: 2.5 }}
+              >
+                Stop running your shop from a notebook and a calculator
               </Typography>
-              <Typography variant="h6" color="text.secondary" fontWeight={400} sx={{ mb: 4 }}>
-                IMS replaces the notebook, the calculator and the separate billing app with one
-                system: stock, purchases, sales and reports, all in sync.
+              <Typography variant="h6" color="text.secondary" fontWeight={400} sx={{ mb: 4, maxWidth: 480 }}>
+                IMS brings stock, purchases, billing and reporting into one system — set up once,
+                run entirely by you.
               </Typography>
-              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-                <Button component={RouterLink} to={primaryCta.to} variant="contained" size="large">
-                  {primaryCta.label}
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mb: 3.5 }}>
+                <Button
+                  component={RouterLink}
+                  to={needsSetup ? '/signup' : '/login'}
+                  variant="contained"
+                  size="large"
+                >
+                  {needsSetup ? 'Create your account' : 'Log in'}
                 </Button>
-                {needsSetup && (
-                  <Button component={RouterLink} to="/login" variant="outlined" size="large">
-                    Already set up? Log in
-                  </Button>
-                )}
+                <Button href="#how-it-works" variant="outlined" size="large">
+                  See how it works
+                </Button>
+              </Stack>
+              <Stack spacing={1}>
+                {VALUE_STRIP.map((v) => (
+                  <Stack key={v} direction="row" spacing={1} alignItems="center">
+                    <CheckCircleOutlineIcon fontSize="small" color="primary" />
+                    <Typography variant="body2" color="text.secondary">
+                      {v}
+                    </Typography>
+                  </Stack>
+                ))}
               </Stack>
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
@@ -162,19 +210,39 @@ export default function Landing() {
         </Container>
       </Box>
 
-      <Box component="section" sx={{ py: { xs: 6, md: 9 }, bgcolor: 'background.paper' }}>
+      <Box id="features" component="section" sx={{ py: { xs: 7, md: 10 }, bgcolor: 'background.paper' }}>
         <Container maxWidth="lg">
-          <Typography variant="h4" fontWeight={700} textAlign="center" sx={{ mb: 1 }}>
-            Everything your shop needs
+          <Typography variant="overline" color="primary" fontWeight={700} textAlign="center" sx={{ display: 'block' }}>
+            Features
           </Typography>
-          <Typography variant="body1" color="text.secondary" textAlign="center" sx={{ mb: 6 }}>
+          <Typography variant="h4" fontWeight={700} textAlign="center" sx={{ mb: 1 }}>
+            Everything your shop needs, nothing it doesn't
+          </Typography>
+          <Typography variant="body1" color="text.secondary" textAlign="center" sx={{ mb: 6, maxWidth: 560, mx: 'auto' }}>
             No modules to enable, no add-ons to buy — it's all here from the first login.
           </Typography>
           <Grid container spacing={3}>
             {FEATURES.map((f) => (
               <Grid key={f.title} size={{ xs: 12, sm: 6, md: 3 }}>
-                <Paper variant="outlined" sx={{ p: 3, height: '100%' }}>
-                  <Box sx={{ color: 'primary.main', mb: 1.5 }}>{f.icon}</Box>
+                <Paper
+                  variant="outlined"
+                  sx={{ p: 3, height: '100%', transition: 'box-shadow .2s, transform .2s', '&:hover': { boxShadow: 4, transform: 'translateY(-2px)' } }}
+                >
+                  <Box
+                    sx={{
+                      width: 44,
+                      height: 44,
+                      borderRadius: 2,
+                      bgcolor: 'rgba(47,93,138,0.1)',
+                      color: 'primary.main',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      mb: 2,
+                    }}
+                  >
+                    {f.icon}
+                  </Box>
                   <Typography variant="subtitle1" fontWeight={700} gutterBottom>
                     {f.title}
                   </Typography>
@@ -188,15 +256,18 @@ export default function Landing() {
         </Container>
       </Box>
 
-      <Box component="section" sx={{ py: { xs: 6, md: 9 } }}>
+      <Box id="how-it-works" component="section" sx={{ py: { xs: 7, md: 10 } }}>
         <Container maxWidth="lg">
+          <Typography variant="overline" color="primary" fontWeight={700} textAlign="center" sx={{ display: 'block' }}>
+            How it works
+          </Typography>
           <Typography variant="h4" fontWeight={700} textAlign="center" sx={{ mb: 6 }}>
-            Set up in three steps
+            From zero to billing your first customer
           </Typography>
           <Grid container spacing={4}>
             {STEPS.map((s) => (
               <Grid key={s.n} size={{ xs: 12, md: 4 }}>
-                <Stack spacing={1.5} alignItems={{ xs: 'flex-start' }}>
+                <Stack spacing={1.5}>
                   <Box
                     sx={{
                       width: 40,
@@ -225,33 +296,53 @@ export default function Landing() {
         </Container>
       </Box>
 
-      <Box component="section" sx={{ py: { xs: 6, md: 8 }, bgcolor: 'primary.main', color: '#fff' }}>
+      <Box component="section" sx={{ py: { xs: 7, md: 9 }, bgcolor: 'primary.main', color: '#fff' }}>
         <Container maxWidth="sm" sx={{ textAlign: 'center' }}>
           <Typography variant="h4" fontWeight={700} sx={{ mb: 1.5 }}>
-            {needsSetup ? 'Set up your shop today' : 'Welcome back'}
+            {needsSetup ? "Your shop's system, set up in minutes" : 'Pick up right where you left off'}
           </Typography>
           <Typography variant="body1" sx={{ mb: 4, opacity: 0.9 }}>
             {needsSetup
-              ? 'Takes a couple of minutes. No card, no trial, no one else to wait on.'
-              : 'Pick up right where you left off.'}
+              ? 'No sales calls, no demos to sit through — create your account and start today.'
+              : 'Log back in to check stock, ring up sales, or see how the shop is doing.'}
           </Typography>
           <Button
             component={RouterLink}
-            to={primaryCta.to}
+            to={needsSetup ? '/signup' : '/login'}
             variant="contained"
             size="large"
             sx={{ bgcolor: '#fff', color: 'primary.main', '&:hover': { bgcolor: '#f0f0f0' } }}
           >
-            {primaryCta.label}
+            {needsSetup ? 'Create your account' : 'Go to log in'}
           </Button>
         </Container>
       </Box>
 
-      <Box component="footer" sx={{ py: 3, borderTop: '1px solid #e0e0e0' }}>
+      <Box component="footer" sx={{ py: 4, borderTop: '1px solid #e0e0e0' }}>
         <Container maxWidth="lg">
-          <Typography variant="body2" color="text.secondary" textAlign="center">
-            IMS — Inventory &amp; billing for your shop.
-          </Typography>
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            spacing={2}
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <Stack>
+              <Typography variant="subtitle2" fontWeight={800} color="primary">
+                IMS
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                Inventory &amp; billing for your shop.
+              </Typography>
+            </Stack>
+            <Stack direction="row" spacing={3}>
+              <Typography component={RouterLink} to="/login" variant="body2" color="text.secondary" sx={{ textDecoration: 'none' }}>
+                Log in
+              </Typography>
+              <Typography component={RouterLink} to="/signup" variant="body2" color="text.secondary" sx={{ textDecoration: 'none' }}>
+                Sign up
+              </Typography>
+            </Stack>
+          </Stack>
         </Container>
       </Box>
     </Box>
