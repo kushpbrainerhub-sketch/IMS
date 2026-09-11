@@ -5,6 +5,7 @@ import Billing from './pages/Billing'
 import Categories from './pages/Categories'
 import Dashboard from './pages/Dashboard'
 import ForgotPassword from './pages/ForgotPassword'
+import Landing from './pages/Landing'
 import Login from './pages/Login'
 import Products from './pages/Products'
 import Purchases from './pages/Purchases'
@@ -31,7 +32,8 @@ function App() {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/verify-email" element={<VerifyEmail />} />
-      <Route path="/" element={withShell(<Dashboard />)} />
+      <Route path="/" element={<Landing />} />
+      <Route path="/dashboard" element={withShell(<Dashboard />)} />
       <Route path="/billing" element={withShell(<Billing />)} />
       <Route path="/sales" element={withShell(<Sales />)} />
       <Route path="/products" element={withShell(<Products />)} />

@@ -53,7 +53,7 @@ export default function VerifyEmail() {
         )}
 
         <Typography variant="body2" sx={{ mt: 2, textAlign: 'center' }}>
-          <Link component={RouterLink} to={user ? '/' : '/login'}>
+          <Link component={RouterLink} to={user ? '/dashboard' : '/login'}>
             {user ? 'Go to dashboard' : 'Back to log in'}
           </Link>
         </Typography>

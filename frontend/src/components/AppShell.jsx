@@ -29,7 +29,7 @@ import { useAuth } from '../context/AuthContext'
 const DRAWER_WIDTH = 240
 
 const NAV_ITEMS = [
-  { label: 'Dashboard', path: '/', icon: <DashboardIcon /> },
+  { label: 'Dashboard', path: '/dashboard', icon: <DashboardIcon /> },
   { label: 'Billing', path: '/billing', icon: <PointOfSaleIcon /> },
   { label: 'Sales', path: '/sales', icon: <ReceiptLongIcon /> },
   { label: 'Products', path: '/products', icon: <Inventory2Icon /> },

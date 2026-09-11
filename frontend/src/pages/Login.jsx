@@ -36,7 +36,7 @@ export default function Login() {
     setSubmitting(true)
     try {
       await login(email, password)
-      navigate('/')
+      navigate('/dashboard')
     } catch {
       setError('Invalid email or password')
     } finally {
