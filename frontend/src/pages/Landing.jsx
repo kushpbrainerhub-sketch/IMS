@@ -122,8 +122,11 @@ export default function Landing() {
             </Typography>
             <Box sx={{ flexGrow: 1 }} />
             <Stack direction="row" spacing={1.5}>
-              <Button component={RouterLink} to={primaryCta.to} variant="contained">
-                {primaryCta.label}
+              <Button component={RouterLink} to="/login" color="inherit">
+                Log in
+              </Button>
+              <Button component={RouterLink} to="/signup" variant="contained">
+                Get started
               </Button>
             </Stack>
           </Container>

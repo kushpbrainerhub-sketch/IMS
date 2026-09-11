@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link as RouterLink, useNavigate } from 'react-router-dom'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -18,6 +18,15 @@ export default function Signup() {
   const [error, setError] = useState('')
   const [result, setResult] = useState(null)
   const navigate = useNavigate()
+
+  const { data: setupStatus } = useQuery({
+    queryKey: ['setup-status'],
+    queryFn: () => apiClient.get('/auth/setup-status').then((res) => res.data),
+  })
+
+  useEffect(() => {
+    if (setupStatus && !setupStatus.needs_setup && !result) navigate('/login', { replace: true })
+  }, [setupStatus, result, navigate])
 
   const signup = useMutation({
     mutationFn: () => apiClient.post('/auth/register', { name, email, password }),
