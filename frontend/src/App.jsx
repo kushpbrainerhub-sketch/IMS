@@ -1,37 +1,29 @@
 import { Route, Routes } from 'react-router-dom'
-import Nav from './components/Nav'
+import AppShell from './components/AppShell'
 import ProtectedRoute from './components/ProtectedRoute'
 import Dashboard from './pages/Dashboard'
 import Login from './pages/Login'
 import Products from './pages/Products'
-import './App.css'
+import Purchases from './pages/Purchases'
+import Suppliers from './pages/Suppliers'
+
+function withShell(element) {
+  return (
+    <ProtectedRoute>
+      <AppShell>{element}</AppShell>
+    </ProtectedRoute>
+  )
+}
 
 function App() {
   return (
-    <>
-      <Nav />
-      <div style={{ padding: 16 }}>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/products"
-            element={
-              <ProtectedRoute>
-                <Products />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </div>
-    </>
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route path="/" element={withShell(<Dashboard />)} />
+      <Route path="/products" element={withShell(<Products />)} />
+      <Route path="/purchases" element={withShell(<Purchases />)} />
+      <Route path="/suppliers" element={withShell(<Suppliers />)} />
+    </Routes>
   )
 }
 
