@@ -6,6 +6,7 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import Grid from '@mui/material/Grid'
+import Link from '@mui/material/Link'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
@@ -318,31 +319,50 @@ export default function Landing() {
         </Container>
       </Box>
 
-      <Box component="footer" sx={{ py: 4, borderTop: '1px solid #e0e0e0' }}>
+      <Box component="footer" sx={{ pt: 6, pb: 4, borderTop: '1px solid #e0e0e0', bgcolor: 'background.paper' }}>
         <Container maxWidth="lg">
-          <Stack
-            direction={{ xs: 'column', sm: 'row' }}
-            spacing={2}
-            alignItems="center"
-            justifyContent="space-between"
-          >
-            <Stack>
-              <Typography variant="subtitle2" fontWeight={800} color="primary">
+          <Grid container spacing={4} sx={{ mb: 4 }}>
+            <Grid size={{ xs: 12, sm: 5 }}>
+              <Typography variant="subtitle1" fontWeight={800} color="primary" gutterBottom>
                 IMS
               </Typography>
-              <Typography variant="caption" color="text.secondary">
-                Inventory &amp; billing for your shop.
+              <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 280 }}>
+                Inventory and billing for your shop, run entirely by you — one account, one
+                system, nothing shared.
               </Typography>
-            </Stack>
-            <Stack direction="row" spacing={3}>
-              <Typography component={RouterLink} to="/login" variant="body2" color="text.secondary" sx={{ textDecoration: 'none' }}>
-                Log in
+            </Grid>
+            <Grid size={{ xs: 6, sm: 3.5 }}>
+              <Typography variant="subtitle2" fontWeight={700} gutterBottom>
+                Product
               </Typography>
-              <Typography component={RouterLink} to="/signup" variant="body2" color="text.secondary" sx={{ textDecoration: 'none' }}>
-                Sign up
+              <Stack spacing={1} sx={{ mt: 1.5 }}>
+                <Link href="#features" underline="hover" color="text.secondary" variant="body2">
+                  Features
+                </Link>
+                <Link href="#how-it-works" underline="hover" color="text.secondary" variant="body2">
+                  How it works
+                </Link>
+              </Stack>
+            </Grid>
+            <Grid size={{ xs: 6, sm: 3.5 }}>
+              <Typography variant="subtitle2" fontWeight={700} gutterBottom>
+                Account
               </Typography>
-            </Stack>
-          </Stack>
+              <Stack spacing={1} sx={{ mt: 1.5 }}>
+                <Link component={RouterLink} to="/login" underline="hover" color="text.secondary" variant="body2">
+                  Log in
+                </Link>
+                <Link component={RouterLink} to="/signup" underline="hover" color="text.secondary" variant="body2">
+                  Sign up
+                </Link>
+              </Stack>
+            </Grid>
+          </Grid>
+          <Box sx={{ pt: 3, borderTop: '1px solid #eef1f4' }}>
+            <Typography variant="caption" color="text.secondary">
+              © {new Date().getFullYear()} IMS. Built for one shop, one owner.
+            </Typography>
+          </Box>
         </Container>
       </Box>
     </Box>
