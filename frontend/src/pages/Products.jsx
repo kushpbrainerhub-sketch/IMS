@@ -42,7 +42,7 @@ const emptyProductForm = {
   sku: '',
   name: '',
   category_id: '',
-  unit: 'pcs',
+  unit: '',
   cost_price: '',
   sell_price: '',
   quantity: '',
@@ -82,7 +82,7 @@ export default function Products() {
       sku: form.sku,
       name: form.name,
       category_id: form.category_id ? Number(form.category_id) : null,
-      unit: form.unit,
+      unit: form.unit.trim() || 'pcs',
       cost_price: Number(form.cost_price || 0),
       sell_price: Number(form.sell_price || 0),
       quantity: Number(form.quantity || 0),
@@ -97,12 +97,15 @@ export default function Products() {
       </Typography>
 
       <Grid container spacing={3} sx={{ mb: 3 }}>
-        <Grid size={{ xs: 12, md: 4 }}>
-          <Paper variant="outlined" sx={{ p: 2.5 }}>
+        <Grid size={{ xs: 12, md: 4 }} sx={{ minWidth: 0 }}>
+          <Paper variant="outlined" sx={{ p: 2.5, minWidth: 0 }}>
             <Typography variant="subtitle1" fontWeight={600} gutterBottom>
               Categories
             </Typography>
-            <Stack direction="row" flexWrap="wrap" gap={1} sx={{ mb: 2, minHeight: 32 }}>
+            <Stack
+              direction="row"
+              sx={{ flexWrap: 'wrap', gap: 1, mb: 2, minHeight: 32, minWidth: 0 }}
+            >
               {categories.map((c) => (
                 <Chip key={c.id} label={c.name} size="small" />
               ))}
@@ -176,8 +179,14 @@ export default function Products() {
                 <Grid size={{ xs: 6, sm: 2 }}>
                   <TextField
                     label="Unit"
+                    placeholder="pcs"
                     value={form.unit}
                     onChange={(e) => setForm({ ...form, unit: e.target.value })}
+                    onBlur={() => {
+                      if (/^\d+$/.test(form.unit.trim())) {
+                        setForm((f) => ({ ...f, unit: `${f.unit.trim()} pcs` }))
+                      }
+                    }}
                     size="small"
                     fullWidth
                   />

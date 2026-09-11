@@ -17,7 +17,7 @@ export default function EditProductDialog({ product, categories, onClose }) {
     sku: product.sku,
     name: product.name,
     category_id: product.category_id ?? '',
-    unit: product.unit,
+    unit: product.unit === 'pcs' ? '' : product.unit,
     cost_price: product.cost_price,
     sell_price: product.sell_price,
     reorder_level: product.reorder_level,
@@ -41,7 +41,7 @@ export default function EditProductDialog({ product, categories, onClose }) {
       sku: form.sku,
       name: form.name,
       category_id: form.category_id ? Number(form.category_id) : null,
-      unit: form.unit,
+      unit: form.unit.trim() || 'pcs',
       cost_price: Number(form.cost_price || 0),
       sell_price: Number(form.sell_price || 0),
       reorder_level: Number(form.reorder_level || 0),
@@ -94,8 +94,14 @@ export default function EditProductDialog({ product, categories, onClose }) {
             <Grid size={{ xs: 6, sm: 6 }}>
               <TextField
                 label="Unit"
+                placeholder="pcs"
                 value={form.unit}
                 onChange={(e) => setForm({ ...form, unit: e.target.value })}
+                onBlur={() => {
+                  if (/^\d+$/.test(form.unit.trim())) {
+                    setForm((f) => ({ ...f, unit: `${f.unit.trim()} pcs` }))
+                  }
+                }}
                 size="small"
                 fullWidth
               />
