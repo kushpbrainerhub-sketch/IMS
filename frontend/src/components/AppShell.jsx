@@ -18,6 +18,7 @@ import DashboardIcon from '@mui/icons-material/DashboardOutlined'
 import Inventory2Icon from '@mui/icons-material/Inventory2Outlined'
 import LocalShippingIcon from '@mui/icons-material/LocalShippingOutlined'
 import LogoutIcon from '@mui/icons-material/LogoutOutlined'
+import PointOfSaleIcon from '@mui/icons-material/PointOfSaleOutlined'
 import StoreIcon from '@mui/icons-material/StoreOutlined'
 import { useAuth } from '../context/AuthContext'
 
@@ -25,6 +26,7 @@ const DRAWER_WIDTH = 240
 
 const NAV_ITEMS = [
   { label: 'Dashboard', path: '/', icon: <DashboardIcon /> },
+  { label: 'Billing', path: '/billing', icon: <PointOfSaleIcon /> },
   { label: 'Products', path: '/products', icon: <Inventory2Icon /> },
   { label: 'Purchases', path: '/purchases', icon: <LocalShippingIcon /> },
   { label: 'Suppliers', path: '/suppliers', icon: <StoreIcon /> },
