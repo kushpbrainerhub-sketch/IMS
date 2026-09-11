@@ -28,3 +28,38 @@ def decode_access_token(token: str) -> dict | None:
         return jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
     except JWTError:
         return None
+
+
+def _create_purpose_token(user_id: int, purpose: str, expires_minutes: int) -> str:
+    expire = datetime.now(timezone.utc) + timedelta(minutes=expires_minutes)
+    return jwt.encode(
+        {"sub": str(user_id), "purpose": purpose, "exp": expire},
+        settings.SECRET_KEY,
+        algorithm=settings.ALGORITHM,
+    )
+
+
+def _decode_purpose_token(token: str, purpose: str) -> int | None:
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+    except JWTError:
+        return None
+    if payload.get("purpose") != purpose or payload.get("sub") is None:
+        return None
+    return int(payload["sub"])
+
+
+def create_password_reset_token(user_id: int) -> str:
+    return _create_purpose_token(user_id, "password_reset", expires_minutes=30)
+
+
+def decode_password_reset_token(token: str) -> int | None:
+    return _decode_purpose_token(token, "password_reset")
+
+
+def create_email_verification_token(user_id: int) -> str:
+    return _create_purpose_token(user_id, "email_verification", expires_minutes=60 * 24)
+
+
+def decode_email_verification_token(token: str) -> int | None:
+    return _decode_purpose_token(token, "email_verification")

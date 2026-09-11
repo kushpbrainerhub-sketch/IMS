@@ -23,6 +23,7 @@ import PointOfSaleIcon from '@mui/icons-material/PointOfSaleOutlined'
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLongOutlined'
 import StoreIcon from '@mui/icons-material/StoreOutlined'
 import SwapVertIcon from '@mui/icons-material/SwapVertOutlined'
+import VerifyEmailBanner from './VerifyEmailBanner'
 import { useAuth } from '../context/AuthContext'
 
 const DRAWER_WIDTH = 240
@@ -104,6 +105,8 @@ export default function AppShell({ children }) {
             </Menu>
           </Toolbar>
         </AppBar>
+
+        <VerifyEmailBanner />
 
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
           {children}

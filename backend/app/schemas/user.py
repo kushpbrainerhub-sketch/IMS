@@ -17,6 +17,7 @@ class UserOut(BaseModel):
     name: str
     email: EmailStr
     role: UserRole
+    email_verified: bool
 
 
 class LoginRequest(BaseModel):
@@ -27,3 +28,20 @@ class LoginRequest(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"
+
+
+class SetupStatus(BaseModel):
+    needs_setup: bool
+
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str
+
+
+class VerifyEmailRequest(BaseModel):
+    token: str

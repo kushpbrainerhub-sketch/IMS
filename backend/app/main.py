@@ -1,8 +1,12 @@
+import logging
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api import auth, categories, health, products, purchases, reports, sales, stock, suppliers
 from app.core.config import settings
+
+logging.basicConfig(level=logging.INFO)
 
 app = FastAPI(title="IMS API", version="0.1.0")
 
